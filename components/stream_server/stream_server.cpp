@@ -7,6 +7,8 @@
 
 #include "esphome/components/network/util.h"
 #include "esphome/components/socket/socket.h"
+#include <string>
+#include <memory>
 
 static const char *TAG = "stream_server";
 
