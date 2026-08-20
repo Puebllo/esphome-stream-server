@@ -9,6 +9,7 @@
 #include "esphome/components/socket/socket.h"
 #include <string>
 #include <memory>
+#include <span>
 
 static const char *TAG = "stream_server";
 
@@ -50,22 +51,30 @@ void StreamServerComponent::loop() {
 
 void StreamServerComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "Stream Server:");
-#if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 7, 0)
-    char addr_buf[esphome::network::USE_ADDRESS_BUFFER_SIZE];
-    esphome::network::get_use_address_to(std::span<char, esphome::network::USE_ADDRESS_BUFFER_SIZE>(addr_buf, esphome::network::USE_ADDRESS_BUFFER_SIZE));
-    ESP_LOGCONFIG(TAG, "  Address: %s:%u", addr_buf, this->port_);
-#endif
-#if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
-    ESP_LOGCONFIG(TAG, "  Address: %s:%u", esphome::network::get_use_address(), this->port_);
-#else
-    ESP_LOGCONFIG(TAG, "  Address: %s:%u", esphome::network::get_use_address().c_str(), this->port_);
-#endif
-#ifdef USE_BINARY_SENSOR
-    LOG_BINARY_SENSOR("  ", "Connected:", this->connected_sensor_);
-#endif
-#ifdef USE_SENSOR
-    LOG_SENSOR("  ", "Connection count:", this->connection_count_sensor_);
-#endif
+
+    #if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 7, 0)
+        char addr_buf[esphome::network::USE_ADDRESS_BUFFER_SIZE];
+        auto addr_len = esphome::network::get_use_address_to(
+            std::span<char, esphome::network::USE_ADDRESS_BUFFER_SIZE>(
+                addr_buf, esphome::network::USE_ADDRESS_BUFFER_SIZE));
+        addr_buf[addr_len] = '\0';
+
+        ESP_LOGCONFIG(TAG, "  Address: %s:%u", addr_buf, this->port_);
+
+    #elif ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
+        ESP_LOGCONFIG(TAG, "  Address: %s:%u",esphome::network::get_use_address(), this->port_);
+
+    #else
+        ESP_LOGCONFIG(TAG, "  Address: %s:%u",esphome::network::get_use_address().c_str(), this->port_);
+    #endif
+
+    #ifdef USE_BINARY_SENSOR
+        LOG_BINARY_SENSOR("  ", "Connected:", this->connected_sensor_);
+    #endif
+
+    #ifdef USE_SENSOR
+        LOG_SENSOR("  ", "Connection count:", this->connection_count_sensor_);
+    #endif
 }
 
 void StreamServerComponent::on_shutdown() {
