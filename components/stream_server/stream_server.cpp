@@ -48,9 +48,6 @@ void StreamServerComponent::loop() {
 
 void StreamServerComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "Stream Server:");
-
-void StreamServerComponent::dump_config() {
-    ESP_LOGCONFIG(TAG, "Stream Server:");
 #if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 7, 0)
     char addr_buf[esphome::network::USE_ADDRESS_BUFFER_SIZE];
     esphome::network::get_use_address_to(std::span<char, esphome::network::USE_ADDRESS_BUFFER_SIZE>(addr_buf, esphome::network::USE_ADDRESS_BUFFER_SIZE));
